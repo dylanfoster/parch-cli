@@ -1,0 +1,24 @@
+"use strict";
+
+const { Application } = require("parch");
+
+const app = new Application({
+  authentication: {
+  },
+  controllers: {},
+  database: {
+  connection: {},
+  logging: {
+    dir: ""
+  },
+  models: {}
+  },
+  namespace: "api",
+  server: {}
+});
+
+app.map(function () {
+  this.resource("foo");
+});
+
+app.start();

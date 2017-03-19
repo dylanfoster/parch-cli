@@ -1,0 +1,35 @@
+"use strict";
+
+const { Controller } = require("parch");
+
+class <%= upperCaseName %>Controller extends Controller {
+  index(req, res, next) {
+    this.findAll().then(<%= pluralName %> => {
+      res.send(this.STATUS_CODES.SUCCESS, { <%= pluralName %> });
+    }).catch(next);
+  }
+
+  show(req, res, next) {
+    this.findOne(req.params.<%= name %>Id).then(<%= name %> => {
+      res.send(this.STATUS_CODES.SUCCESS, { <%= name %> });
+    }).catch(next);
+  }
+
+  create(req, res, next) {
+    this.createRecord(req.body.<%= name %>).then(<%= name %> => {
+      res.send(this.STATUS_CODES.CREATED, { <%= name %> });
+    }).catch(next);
+  }
+
+  update(req, res, next) {
+    this.updateRecord(req.params.<%= name %>Id, req.body.<%= name %>).then(<%= name %> => {
+      res.send(this.STATUS_CODES.UPDATED, { <%= name %> });
+    }).catch(next);
+  }
+
+  destroy(req, res, next) {
+    this.destroyRecord(req.params.<%= name %>Id).catch(next);
+  }
+}
+
+module.exports = <%= upperCaseName %>Controller;
