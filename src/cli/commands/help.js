@@ -3,11 +3,9 @@
 import Command from "../command";
 
 class HelpCommand extends Command {
-  constructor(cli) {
-    super(cli);
-  }
+  execute(options) {
+    super.execute(options);
 
-  execute() {
     this.cli.log("Not yet implemented");
   }
 }

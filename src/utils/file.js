@@ -12,14 +12,20 @@ const DOTFILES = [
   "gitignore",
   "gitkeep",
   "npmignore",
+  "sequelizerc",
   "travis.yml"
 ];
 
-export function addMetaData(files) {
+export function addMetaData(files, options) {
   return files.map(file => {
     const isDotFile = DOTFILES.some(dot => file.name === dot);
     const isTestFile = path.dirname(file.parentDir) &&
       path.dirname(file.parentDir) === "test";
+    const shouldPrefix = options.prefixOnly &&
+      options.prefixOnly.length &&
+      options.prefixOnly.some(t => {
+        return path.dirname(file.fullPath).match(new RegExp(t, "i"))
+      });
 
     if (isDotFile) {
       file.isDotFile = isDotFile;
@@ -32,17 +38,18 @@ export function addMetaData(files) {
       file.outPath = file.name.replace(/ejs/, "js");
     }
 
-    if (isTestFile) {
-      const fileName = file.name.split(".")[0];
-
-      file.isTestFile = true;
-      file.outPath = file.outPath.replace(
-        path.basename(file.outPath),
-        `${fileName}_tests.js`
-      );
-    }
+    if (isTestFile) { file.isTestFile = true; }
 
     file.inPath = file.fullPath;
+
+    const namedFile = `${options.fileNamePrefix}_${path.basename(file.outPath)}`;
+
+    if (shouldPrefix) {
+      file.outPath = file.outPath.replace(
+        path.basename(file.outPath),
+        namedFile
+      );
+    }
 
     return file;
   });

@@ -10,16 +10,14 @@ import inflect from "inflect";
 import Command from "../command";
 import { file } from "../../utils";
 
-const MAX_ARGS_ALLOWED = 2;
-
 class NewCommand extends Command {
   constructor(cli) {
     super(cli);
-
-    this.projectName = process.cwd().match(/([^\/]*)\/*$/)[1];
   }
 
   execute(options) {
+    super.execute(options);
+
     return this.generateNewProject().catch(this.cli.log.bind(this.cli));
   }
 
@@ -28,22 +26,24 @@ class NewCommand extends Command {
 
     return this.getTemplateFiles(templateDir)
       .then(file.makeDirectories.bind(file))
-      .then(file.makeDirectories.bind(file))
       .then(this.writeTemplateFiles.bind(this));
   }
 
   getTemplateFiles(templateDir) {
     return file.walk(templateDir)
-      .then(file.addMetaData.bind(file))
+      .then(files => file.addMetaData(files, {
+        fileNamePrefix: "foo",
+        prefixOnly: ["controller", "model"]
+      }));
   }
 
   writeTemplateFile(fileObject) {
     return file.readFile(fileObject.inPath).then(data => {
       const output = ejs.render(data.toString(), {
-        name: "user",
+        name: "foo",
         projectName: this.projectName,
-        pluralName: inflect.pluralize("user"),
-        upperCaseName: changeCase.pascalCase("user")
+        pluralName: inflect.pluralize("foo"),
+        upperCaseName: changeCase.pascalCase("foo")
       });
 
       return file.writeFile(fileObject.outPath, output);

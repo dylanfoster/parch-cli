@@ -1,12 +1,20 @@
 "use strict";
 
+import path from "path";
+
 class Command {
   get name() {
     return this.constructor.name.split(/command/i)[0].toLowerCase();
   }
 
+  get projectName() {
+    return process.cwd().match(/([^\/]*)\/*$/)[1];
+  }
+
   constructor(cli) {
     this.cli = cli;
+
+    this.templateDir = path.resolve(__dirname, "../../templates");
   }
 
   execute(options) {

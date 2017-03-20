@@ -11,12 +11,13 @@ class CLI {
   constructor(process) {
     this.knownOpts = {
       help: Boolean,
-      test: Boolean
+      verbose: Boolean,
+      version: Boolean
     };
 
     this.shortOpts = {
       h: ["--help"],
-      t: ["--test"]
+      v: ["--version"]
     };
 
     this.args = process.argv.slice(2);
