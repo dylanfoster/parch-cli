@@ -3,6 +3,38 @@
 const { Controller } = require("parch");
 
 class <%= upperCaseName %>Controller extends Controller {
+  constructor(options) {
+    super(options);
+
+    this.hooks = {
+      index: {
+        before(req, res, next) {
+          next();
+        }
+      },
+      show: {
+        before(req, res, next) {
+          next();
+        }
+      },
+      create: {
+        before(req, res, next) {
+          next();
+        }
+      },
+      update: {
+        before(req, res, next) {
+          next();
+        }
+      },
+      destroy: {
+        before(req, res, next) {
+          next();
+        }
+      }
+    }
+  }
+
   index(req, res, next) {
     this.findAll().then(<%= pluralName %> => {
       res.send(this.STATUS_CODES.SUCCESS, { <%= pluralName %> });

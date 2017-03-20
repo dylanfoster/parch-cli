@@ -3,7 +3,6 @@
 const path = require("path");
 const url = require("url");
 
-const appRoot = require("app-root-path").path;
 const pgConnectionString = require("pg-connection-string").parse;
 
 const DEFAULT_APP_PORT = 3000;
@@ -15,9 +14,7 @@ if (process.env.DATABASE_URL) {
   postgresConfig = pgConnectionString(process.env.DATABASE_URL);
   postgresConfig.dialect = "postgres";
   postgresConfig.logging = false;
-  postgresConfig.dialectOptions = {
-    ssl: true
-  };
+  postgresConfig.dialectOptions = { ssl: true };
   postgresConfig.username = postgresConfig.user;
 }
 
@@ -37,6 +34,7 @@ const config = {
       dialect: "postgres",
       logging: console.log
     },
+
     test: {
       username: "postgres",
       password: "postgres",
@@ -45,6 +43,7 @@ const config = {
       dialect: "postgres",
       logging: console.log
     },
+
     preview: postgresConfig,
     production: postgresConfig
   }

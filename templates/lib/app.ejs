@@ -1,22 +1,28 @@
 "use strict";
 
+const path = require("path");
+
 const { Application } = require("parch");
+
+const config = require("../config");
+const connection = require("../config/db")[config.app.environment];
 
 const app = module.exports = new Application({
   authentication: {
+    secretKey: config.app.secret
   },
   controllers: {},
   database: {
-  connection: {},
-  logging: {
-    dir: ""
-  },
-  models: {}
+    connection,
+    logging: {
+      dir: path.resolve(__dirname, "data/logs")
+    },
+    models: {}
   },
   namespace: "api",
   server: {}
 });
 
 app.map(function () {
-  this.resource("foo");
+  this.resource("user");
 });
