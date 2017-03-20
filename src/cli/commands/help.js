@@ -4,9 +4,21 @@ import Command from "../command";
 
 class HelpCommand extends Command {
   execute(options) {
-    super.execute(options);
+    const help = `
+parch <command> [options]
 
-    this.cli.log("Not yet implemented");
+  commands:
+    parch new <name>                  generate a new parch project
+      alias: n
+
+    parch generate <template> <name>  generate a new template file by name (e.g. parch g controller foo)
+      alias: g
+
+    parch serve
+      alias: s
+    `;
+
+    this.cli.log(help);
   }
 }
 

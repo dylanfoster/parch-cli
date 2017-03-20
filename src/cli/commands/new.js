@@ -37,6 +37,15 @@ class NewCommand extends Command {
       }));
   }
 
+  runHelp() {
+    const help = `
+parch new  generate a new parch project
+  alias: n
+    `;
+
+    this.cli.log(help);
+  }
+
   writeTemplateFile(fileObject) {
     return file.readFile(fileObject.inPath).then(data => {
       const output = ejs.render(data.toString(), {

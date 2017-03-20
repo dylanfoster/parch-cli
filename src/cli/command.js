@@ -19,7 +19,9 @@ class Command {
 
   execute(options) {
     if (options.help) {
-      return this.runHelp();
+      this.runHelp();
+
+      process.exit(0);
     }
   }
 

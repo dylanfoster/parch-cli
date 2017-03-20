@@ -78,6 +78,15 @@ class GenerateCommand extends Command {
     }));
   }
 
+  runHelp() {
+    const help = `
+parch generate <template> <name> generate a new file from <template>
+  alias: g
+    `;
+
+    this.cli.log(help);
+  }
+
   writeTemplateFile(name, fileObject) {
     return file.readFile(fileObject.inPath).then(data => {
       const output = ejs.render(data.toString(), {

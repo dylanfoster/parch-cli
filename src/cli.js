@@ -5,7 +5,9 @@ import path from "path";
 import include from "include-all";
 import nopt from "nopt";
 
-process.title = "parch";
+import pkg from "../package";
+
+process.title = "parch-cli";
 
 class CLI {
   constructor(process) {
@@ -41,6 +43,10 @@ class CLI {
       const [commandName] = remain;
       const command = this.commands.get(commandName);
 
+      if (!command) {
+        throw new Error("Unknown command");
+      }
+
       // TODO: validate command first
       command.execute(options);
     } else if (options.help) {
@@ -48,7 +54,9 @@ class CLI {
 
       command.execute(options);
     } else if (options.version) {
+      this.log(`parch-cli: ${pkg.version}`);
     } else {
+      throw new Error("Unknown command");
       // unknown option
     }
   }
