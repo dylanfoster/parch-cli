@@ -2,7 +2,7 @@
 
 const { Application } = require("parch");
 
-const app = new Application({
+const app = module.exports = new Application({
   authentication: {
   },
   controllers: {},
@@ -20,5 +20,3 @@ const app = new Application({
 app.map(function () {
   this.resource("foo");
 });
-
-app.start();

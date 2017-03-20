@@ -1,0 +1,53 @@
+"use strict";
+
+const path = require("path");
+const url = require("url");
+
+const appRoot = require("app-root-path").path;
+const pgConnectionString = require("pg-connection-string").parse;
+
+const DEFAULT_APP_PORT = 3000;
+const DOCKER_HOST = process.env.DOCKER_HOST || "http://localhost";
+const DOCKER_HOSTNAME = url.parse(DOCKER_HOST).hostname;
+let postgresConfig;
+
+if (process.env.DATABASE_URL) {
+  postgresConfig = pgConnectionString(process.env.DATABASE_URL);
+  postgresConfig.dialect = "postgres";
+  postgresConfig.logging = false;
+  postgresConfig.dialectOptions = {
+    ssl: true
+  };
+  postgresConfig.username = postgresConfig.user;
+}
+
+const config = {
+  app: {
+    environment: process.env.NODE_ENV || "development",
+    port: process.env.PORT || DEFAULT_APP_PORT,
+    secret: process.env.APP_SECRET || "secret"
+  },
+
+  postgres: {
+    development: {
+      username: "postgres",
+      password: "postgres",
+      database: "postgres_dev",
+      host: "http://localhost",
+      dialect: "postgres",
+      logging: console.log
+    },
+    test: {
+      username: "postgres",
+      password: "postgres",
+      database: "postgres_test",
+      host: "http://localhost",
+      dialect: "postgres",
+      logging: console.log
+    },
+    preview: postgresConfig,
+    production: postgresConfig
+  }
+};
+
+module.exports = config;

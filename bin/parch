@@ -4,4 +4,4 @@
 const CLI = require("../lib/cli");
 const cli = new CLI(process);
 
-cli.run();
+return cli.run();

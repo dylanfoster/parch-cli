@@ -31,7 +31,7 @@ class CLI {
     }
   }
 
-  run(){
+  run() {
     const options = nopt(this.knownOpts, this.shortOpts, this.args, 0);
     const { argv: { remain }} = options;
 
@@ -40,7 +40,15 @@ class CLI {
       const [commandName] = remain;
       const command = this.commands.get(commandName);
 
+      // TODO: validate command first
       command.execute(options);
+    } else if (options.help) {
+      const command = this.commands.get("help");
+
+      command.execute(options);
+    } else if (options.version) {
+    } else {
+      // unknown option
     }
   }
 
@@ -52,6 +60,7 @@ class CLI {
 
     Object.keys(commands).forEach(command => {
       this.commands.set(command, new commands[command](this));
+      this.commands.set(command.substring(0, 1),  new commands[command](this));
     });
   }
 }

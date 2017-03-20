@@ -10,123 +10,167 @@ import mkdirp from "mkdirp";
 
 import Command from "../command";
 
+const DOTFILES = [
+  "editorconfig",
+  "eslintignore",
+  "gitignore",
+  "npmignore",
+  "travis.yml"
+];
 const MAX_ARGS_ALLOWED = 2;
 
 class NewCommand extends Command {
   constructor(cli) {
     super(cli);
-  }
 
-  deriveFileName(file) {
-    return file.replace(/\.ejs/, "");
-  }
-
-  deriveFileType(file) {
-    const typeMap = {
-      app: "./",
-      controller: "controllers",
-      model: "models"
-    };
-    const types = ["app", "controller", "model"];
-    const type = file.replace(/\.ejs/, "");
-
-    return {
-      path: typeMap[type],
-      type
-    };
+    this.projectName = process.cwd().match(/([^\/]*)\/*$/)[1];
   }
 
   execute(options) {
-    const { argv: { remain }} = options;
-    const afterThisCommand = remain.slice(1);
-    const argLength = afterThisCommand.length;
-
-    switch (argLength) {
-      case 0:
-        this.runNewProjectSetup({}).catch(this.cli.log.bind(this.cli));
-        break; case 1:
-        throw new Error("Invalid number of args passed to 'new'");
-        break;
-      case 2:
-        const [type, name] = afterThisCommand;
-
-        this.runBlueprint({ name, type }).catch(this.cli.log.bind(this.cli));
-        break;
-      default:
-        throw new Error("Invalid number of args passed to 'new'");
-    }
+    return this.generateNewProject().catch(this.cli.log.bind(this.cli));
   }
 
-  getTemplateFiles(options = {}) {
+  generateNewProject() {
     const templateDir = path.resolve(__dirname, "../../../templates");
-    let { name, type } = options;
 
+    return this.getTemplateFiles(templateDir)
+      .then(this.writeFiles.bind(this));
+  }
+
+  getTemplateFiles(templateDir) {
+    return this.readDir(templateDir).then(files => {
+      return Promise.all(files.map(file => {
+        const filePath = path.join(templateDir, file);
+        const newFile = file.replace(/ejs/, 'js');
+
+        console.log(file);
+        return this.stat(filePath).then(stat => {
+          const fileObject = {
+            file,
+            inPath: filePath,
+            isDirectory: stat.isDirectory.bind(stat),
+            isDotFile: DOTFILES.some(dot => file === dot),
+            outPath: path.resolve(process.cwd(), newFile),
+            stat: stat,
+          }
+
+          if (stat.isDirectory()) {
+            const dirName = filePath.match(/([^\/]*)\/*$/)[1];
+
+            fileObject.files = [];
+
+            return this.readDir(filePath).then(nestedFiles => {
+              return Promise.all(nestedFiles.map(nestedFile => {
+                const nestedFilePath = path.join(filePath, nestedFile);
+                const newFile = nestedFile.replace(/ejs/, 'js');
+
+                return this.stat(nestedFilePath).then(stat => {
+                  fileObject.files.push({
+                    file: nestedFile,
+                    inPath: nestedFilePath,
+                    isDirectory: stat.isDirectory.bind(stat),
+                    isDotFile: DOTFILES.some(dot => nestedFile === dot),
+                    isTestFile: new RegExp(/test/i).test(dirName),
+                    outPath: path.resolve(process.cwd(), dirName, newFile),
+                    stat
+                  });
+                });
+              }));
+            }).then(() => fileObject);
+          }
+
+          return fileObject;
+        });
+      }));
+    });
+  }
+
+  makeDirectories(directories) {
+    return Promise.all(directories.map(this.makeDirectory.bind(this)));
+  }
+
+  makeDirectory(directory) {
     return new Promise((resolve, reject) => {
-      fs.readdir(templateDir, (err, files) => {
+      mkdirp(directory, err => {
         if (err) { return reject(err); }
 
-        if (name && type) {
-          files = files.filter(file => path.basename(file).match(type));
-        }
+        resolve();
+      });
+    })
+  }
 
-        resolve(files.map(file => {
-          let fileString;
+  readDir(directory) {
+    return new Promise((resolve, reject) => {
+      fs.readdir(directory, (err, files) => {
+        if (err) { return reject(err); }
 
-          try {
-            fileString = fs.readFileSync(path.join(templateDir, file)).toString();
-          } catch (err) {
-            return reject(err);
-          }
-
-          if (!file.name) {
-            name = "foo";
-            type = this.deriveFileType(file).type;
-          }
-
-          return {
-            data: fileString,
-            template: file,
-            name,
-            type,
-          };
-        }));
+        resolve(files);
       });
     });
   }
 
-  runBlueprint(options) {
-    return this.getTemplateFiles(options)
-      .then(files => this.writeFiles(files))
+  stat(filePath) {
+    return new Promise((resolve, reject) => {
+      fs.stat(filePath, (err, stat) => {
+        if (err) { return reject(err); }
+
+        resolve(stat);
+      })
+    });
   }
 
-  runNewProjectSetup() {
-    return this.getTemplateFiles({}).then(files => this.writeFiles(files, {}));
+  writeFile(file) {
+    if (file.isDotFile) {
+      file.outPath = file.outPath.replace(file.file, `.${file.file}`);
+    }
+
+    if (file.isTestFile) {
+      const fileWithoutExtension = file.file.split(".")[0];
+      const regex = new RegExp(fileWithoutExtension, "i");
+
+      file.outPath = file.outPath.replace(regex, `${fileWithoutExtension}_tests`);
+    }
+
+    return new Promise((resolve, reject) => {
+      fs.readFile(file.inPath, (err, data) => {
+        if (err) { return reject(err); }
+
+        const out = ejs.render(data.toString(), {
+          name: "foo",
+          pluralName: "foos",
+          projectName: this.projectName,
+          upperCaseName: "Foo"
+        });
+
+        return this._writeFile(file.outPath, out);
+      });
+    });
   }
 
   writeFiles(files) {
-    console.log(files);
-    return Promise.all(files.map(file => {
-      const fileName = `${file.name}_${file.type}.js`;
-      const outputDir = `lib/${inflect.pluralize(file.type)}`;
-      const template = ejs.compile(file.data);
-      const outputString = template({
-        name: file.name,
-        pluralName: inflect.pluralize(file.name),
-        upperCaseName: changeCase.pascalCase(file.name)
+    const dirs = files
+      .filter(file => file.isDirectory())
+      .map(file => file.outPath.match(/([^\/]*)\/*$/)[1]);
+
+    return this.makeDirectories(dirs).then(() => {
+      return Promise.all(files.map(file => {
+        if (file.isDirectory()) {
+          return this.writeFiles(file.files);
+        }
+
+        return this.writeFile(file);
+      }));
+    });
+  }
+
+  _writeFile(filePath, data){
+    return new Promise((resolve, reject) => {
+      fs.writeFile(filePath, data, err => {
+        if (err) { return reject(err); }
+
+        resolve();
       });
-
-      return new Promise((resolve, reject) => {
-        mkdirp(outputDir, err => {
-          if (err) { return reject(err); }
-
-          fs.writeFile(path.join(outputDir, fileName), outputString, err => {
-            if (err) { return reject(err); }
-
-            resolve();
-          });
-        });
-      });
-    }));
+    });
   }
 }
 

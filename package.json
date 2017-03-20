@@ -2,6 +2,9 @@
   "name": "parch-cli",
   "version": "0.0.1",
   "description": "Command line utility for Parch",
+  "bin": {
+    "parch": "bin/parch"
+  },
   "main": "index.js",
   "scripts": {
     "build": "babel src -d lib",

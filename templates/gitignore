@@ -1,7 +1,6 @@
 /.DS_Store
 /coverage
 /lib
-!/templates/lib
 /node_modules
 /npm-debug.log
 docs

@@ -1,0 +1,15 @@
+sudo: false
+language: node_js
+node_js:
+- '6'
+- '5'
+- '4'
+os:
+- osx
+- linux
+cache:
+  directories:
+  - node_modules
+before_install:
+- npm config set spin false
+script: npm run test:cover
