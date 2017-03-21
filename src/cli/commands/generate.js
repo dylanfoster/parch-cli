@@ -10,6 +10,8 @@ import Command from "../command";
 
 import { file } from "../../utils";
 
+const VALID_ARGS_LENGTH = 2;
+
 class GenerateCommand extends Command {
   constructor(cli) {
     super(cli);
@@ -24,14 +26,20 @@ class GenerateCommand extends Command {
         testFile: "test/models"
       }
     };
+
+    this.aliases = ["g"];
+    this.args = ["<template>", "<name>"];
+    this.description = "Generate a new file from a template";
+    this.options = [];
   }
 
   execute(options) {
     super.execute(options);
 
     const { argv: { remain }} = options;
-    const first = remain.shift();
-    const isValidArgs = remain.length === 2;
+
+    remain.shift();
+    const isValidArgs = remain.length === VALID_ARGS_LENGTH;
 
     if (isValidArgs) {
       const type = remain.shift();
@@ -42,7 +50,12 @@ class GenerateCommand extends Command {
         .then(this.writeTemplateFiles.bind(this, name))
         .catch(err => console.log(err.stack));
     } else {
-      throw new Error("Not enough args");
+      const help = this.cli.commands.get("help");
+
+      this.cli.error("Invalid number of arguments");
+      this.cli.log();
+
+      return help.execute(options);
     }
   }
 
@@ -55,14 +68,10 @@ class GenerateCommand extends Command {
 
     const { templateFile, testFile } = templates;
 
-    return Promise.all([templateFile, testFile].map(dir => {
-      return file.walk(path.join(this.templateDir, dir));
-    }))
-    .then(files => {
-      return files.reduce((acc, current) => {
-        return acc.concat(current);
-      }, []);
-    })
+    return Promise.all([templateFile, testFile].map(
+      dir => file.walk(path.join(this.templateDir, dir))
+    ))
+    .then(files => files.reduce((acc, current) => acc.concat(current), []))
     .then(files => {
       files.forEach(f => {
         const dirName = path.dirname(f.fullPath);
@@ -79,12 +88,11 @@ class GenerateCommand extends Command {
   }
 
   runHelp() {
-    const help = `
-parch generate <template> <name> generate a new file from <template>
-  alias: g
-    `;
+    const helpCommand = this.cli.commands.get("help");
+    const output = helpCommand.renderCommandBlock(this);
 
-    this.cli.log(help);
+    this.cli.log();
+    this.cli.log(output);
   }
 
   writeTemplateFile(name, fileObject) {

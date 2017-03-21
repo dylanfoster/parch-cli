@@ -13,6 +13,10 @@ import { file } from "../../utils";
 class NewCommand extends Command {
   constructor(cli) {
     super(cli);
+
+    this.aliases = ["n"],
+    this.args = ["[name]"];
+    this.description = "Generate a new Parch project";
   }
 
   execute(options) {
@@ -38,12 +42,11 @@ class NewCommand extends Command {
   }
 
   runHelp() {
-    const help = `
-parch new  generate a new parch project
-  alias: n
-    `;
+    const helpCommand = this.cli.commands.get("help");
+    const output = helpCommand.renderCommandBlock(this);
 
-    this.cli.log(help);
+    this.cli.log();
+    this.cli.log(output);
   }
 
   writeTemplateFile(fileObject) {

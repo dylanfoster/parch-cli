@@ -6,8 +6,6 @@ import include from "include-all";
 import nopt from "nopt";
 import red from "ansi-red";
 
-import pkg from "../package";
-
 process.title = "parch-cli";
 
 class CLI {
@@ -35,33 +33,33 @@ class CLI {
     this.process.stdout.write(`${message}\n`);
   }
 
-  run(args) {
-    const options = nopt(this.knownOpts, this.shortOpts, args, 2);
+  lookupCommand(options) {
     const { argv: { remain }} = options;
+    const [commandName] = remain;
+    let command;
 
     if (remain.length) {
-      // assume first item is the command we want
-      const [commandName] = remain;
-      const command = this.commands.get(commandName);
+      command = this.commands.get(commandName);
 
       if (!command) {
-        return this.error(`Unknown command '${commandName}'`);
+        command = this.commands.get("unknown");
       }
-
-      // TODO: validate command first
-      command.execute(options);
     } else if (options.help) {
-      const command = this.commands.get("help");
-
-      command.execute(options);
+      command = this.commands.get("help");
     } else if (options.version) {
-      const command = this.commands.get("version");
-
-      command.execute(options);
+      command = this.commands.get("version");
     } else {
-      throw new Error("Unknown command");
-      // unknown option
+      command = this.commands.get("unknown");
     }
+
+    return command;
+  }
+
+  run(args) {
+    const options = nopt(this.knownOpts, this.shortOpts, args);
+    const command = this.lookupCommand(options);
+
+    command.execute(options);
   }
 
   _loadCommands() {
@@ -72,7 +70,10 @@ class CLI {
 
     Object.keys(commands).forEach(command => {
       this.commands.set(command, new commands[command](this));
-      this.commands.set(command.substring(0, 1),  new commands[command](this));
+
+      if (command !== "unknown") {
+        this.commands.set(command.substring(0, 1), new commands[command](this));
+      }
     });
   }
 }

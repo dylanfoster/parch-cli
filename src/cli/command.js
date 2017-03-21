@@ -15,6 +15,11 @@ class Command {
     this.cli = cli;
 
     this.templateDir = path.resolve(__dirname, "../../templates");
+
+    this.aliases = [];
+    this.args = [];
+    this.description = "Default description";
+    this.options = [];
   }
 
   execute(options) {
