@@ -4,6 +4,7 @@ import path from "path";
 
 import include from "include-all";
 import nopt from "nopt";
+import red from "ansi-red";
 
 import pkg from "../package";
 
@@ -13,7 +14,6 @@ class CLI {
   constructor(process) {
     this.knownOpts = {
       help: Boolean,
-      verbose: Boolean,
       version: Boolean
     };
 
@@ -22,20 +22,21 @@ class CLI {
       v: ["--version"]
     };
 
-    this.args = process.argv.slice(2);
     this.commands = new Map();
     this.process = process;
     this._loadCommands();
   }
 
-  log(message = "") {
-    if (message) {
-      this.process.stdout.write(`${message}\n`);
-    }
+  error(message) {
+    this.log(red(message));
   }
 
-  run() {
-    const options = nopt(this.knownOpts, this.shortOpts, this.args, 0);
+  log(message = "") {
+    this.process.stdout.write(`${message}\n`);
+  }
+
+  run(args) {
+    const options = nopt(this.knownOpts, this.shortOpts, args, 2);
     const { argv: { remain }} = options;
 
     if (remain.length) {
@@ -44,7 +45,7 @@ class CLI {
       const command = this.commands.get(commandName);
 
       if (!command) {
-        throw new Error("Unknown command");
+        return this.error(`Unknown command '${commandName}'`);
       }
 
       // TODO: validate command first
@@ -54,7 +55,9 @@ class CLI {
 
       command.execute(options);
     } else if (options.version) {
-      this.log(`parch-cli: ${pkg.version}`);
+      const command = this.commands.get("version");
+
+      command.execute(options);
     } else {
       throw new Error("Unknown command");
       // unknown option
