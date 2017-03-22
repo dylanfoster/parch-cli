@@ -1,13 +1,8 @@
 "use strict";
 
-const path = require("path");
-const url = require("url");
-
 const pgConnectionString = require("pg-connection-string").parse;
 
 const DEFAULT_APP_PORT = 3000;
-const DOCKER_HOST = process.env.DOCKER_HOST || "http://localhost";
-const DOCKER_HOSTNAME = url.parse(DOCKER_HOST).hostname;
 let postgresConfig;
 
 if (process.env.DATABASE_URL) {

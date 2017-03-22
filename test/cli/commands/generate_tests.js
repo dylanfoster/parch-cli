@@ -15,7 +15,7 @@ const {
   CLI
 } = fixtures;
 
-describe.only("Command | Generate", function () {
+describe("Command | Generate", function () {
   let cli, command;
 
   beforeEach(function () {

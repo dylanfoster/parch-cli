@@ -1,0 +1,17 @@
+"use strict";
+
+const { expect } = require("chai");
+
+const registry = require("../../lib/app");
+
+describe("Model | <%= upperCaseName %>", function () {
+  let Model;
+
+  beforeEach(function () {
+    Model = registry.lookup("model:<%= name %>");
+  });
+
+  it("works", function () {
+    return Model.create();
+  });
+});

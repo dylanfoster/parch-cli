@@ -6,24 +6,24 @@ class <%= upperCaseName %>Model extends Model {
   constructor() {
     super({
       hooks: {
-        beforeCreate(user) {
+        beforeCreate(/* user */) {
           return;
         }
       },
       instanceMethods: {
-        hasPassword(password) {}
+        hasPassword(/* password */) {}
       }
     });
   }
 
-  associate(<%= upperCaseName %>, models) {
+  associate(/* <%= upperCaseName %>, models */) {
   }
 
-  define(dataTypes) {
+  define(/* dataTypes */) {
     const <%= name %> = {
     };
 
-    return <%= name %>
+    return <%= name %>;
   }
 }
 

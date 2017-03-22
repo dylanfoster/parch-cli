@@ -23,6 +23,8 @@ const app = module.exports = new Application({
   server: {}
 });
 
-app.map(function () {
-  this.resource("user");
+/* eslint-disable no-invalid-this */
+app.map(function routerMap() {
+  this.resource("<%= name %>");
 });
+/* eslint-enable no-invalid-this */

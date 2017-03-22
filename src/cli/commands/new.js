@@ -37,7 +37,8 @@ class NewCommand extends Command {
     return file.walk(templateDir)
       .then(files => file.addMetaData(files, {
         fileNamePrefix: "foo",
-        prefixOnly: ["controller", "model"]
+        prefixOnly: ["controller", "model"],
+        projectRoot: this.projectRootPath
       }));
   }
 
