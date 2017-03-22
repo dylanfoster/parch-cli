@@ -6,11 +6,11 @@ import sinonChai from "sinon-chai";
 
 chai.use(sinonChai);
 
-import CLI from "../src/cli";
 import fixtures from "./fixtures";
 
 const {
-  Command
+  CLI,
+  Command,
 } = fixtures;
 
 function args() {
@@ -46,6 +46,60 @@ describe("CLI", function () {
     });
   });
 
+  describe("#lookupCommand", function () {
+    beforeEach(function () {
+      cli.commands.set("foo", new Command(cli));
+    });
+
+    it("returns a command by name", function () {
+      expect(cli.lookupCommand({
+        argv: {
+          cooked: [],
+          original: ["foo"],
+          remain: ["foo"]
+        }
+      })).to.be.instanceof(Command);
+    });
+
+    it("returns help", function () {
+      const command = cli.lookupCommand({
+        help: true,
+        argv: {
+          cooked: [],
+          original: [],
+          remain: []
+        }
+      });
+
+      expect(command.name).to.eql("help");
+    });
+
+    it("returns version", function () {
+      const command = cli.lookupCommand({
+        version: true,
+        argv: {
+          cooked: [],
+          original: [],
+          remain: []
+        }
+      });
+
+      expect(command.name).to.eql("version");
+    });
+
+    it("returns unknown command if command is not found", function () {
+      const command = cli.lookupCommand({
+        argv: {
+          cooked: [],
+          original: ["bar"],
+          remain: ["bar"]
+        }
+      });
+
+      expect(command.name).to.eql("unknown");
+    });
+  });
+
   describe("#run", function () {
     describe("-h, --help", function () {
       let command;
@@ -53,6 +107,10 @@ describe("CLI", function () {
       beforeEach(function () {
         command = cli.commands.get("help");
         sinon.spy(command, "execute");
+      });
+
+      afterEach(function () {
+        command.execute.restore();
       });
 
       it("executes help with the -h flag", function () {
@@ -88,6 +146,10 @@ describe("CLI", function () {
       beforeEach(function () {
         command = cli.commands.get("version");
         sinon.spy(command, "execute");
+      });
+
+      afterEach(function () {
+        command.execute.restore();
       });
 
       it("executes version with the -v flag", function () {
@@ -135,7 +197,7 @@ describe("CLI", function () {
     it("logs an error if command isn't found", function () {
       cli.run(args(["foo"]));
 
-      expect(cli.process.stdout.write).to.have.been.calledWith("\u001b[31mUnknown command 'foo'\u001b[39m\n");
+      expect(cli.process.stdout.write).to.have.been.calledWith("\u001b[31mUnknown command: 'foo'\u001b[39m\n");
     });
   });
 });

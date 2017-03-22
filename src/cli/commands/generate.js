@@ -77,13 +77,15 @@ class GenerateCommand extends Command {
         const dirName = path.dirname(f.fullPath);
 
         f.parentDir = dirName.split("templates/")[1];
+        f.parentDir = path.resolve(this.projectRootPath, f.parentDir);
       });
 
       return files;
     })
     .then(files => file.addMetaData(files, {
       fileNamePrefix: name,
-      prefixOnly: ["controller", "model"]
+      prefixOnly: ["controller", "model"],
+      projectRoot: this.projectRootPath
     }));
   }
 

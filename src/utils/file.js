@@ -51,6 +51,8 @@ export function addMetaData(files, options) {
       );
     }
 
+    file.outPath = path.resolve(options.projectRoot, file.outPath);
+
     return file;
   });
 }

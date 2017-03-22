@@ -8,7 +8,11 @@ class Command {
   }
 
   get projectName() {
-    return process.cwd().match(/([^\/]*)\/*$/)[1];
+    return path.basename(this.cli.process.cwd());
+  }
+
+  get projectRootPath() {
+    return this.cli.process.cwd();
   }
 
   constructor(cli) {
