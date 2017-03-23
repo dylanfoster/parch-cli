@@ -26,15 +26,13 @@ class NewCommand extends Command {
   }
 
   generateNewProject() {
-    const templateDir = path.resolve(__dirname, "../../../templates");
-
-    return this.getTemplateFiles(templateDir)
+    return this.getTemplateFiles()
       .then(file.makeDirectories.bind(file))
       .then(this.writeTemplateFiles.bind(this));
   }
 
-  getTemplateFiles(templateDir) {
-    return file.walk(templateDir)
+  getTemplateFiles() {
+    return file.walk(this.templateDir)
       .then(files => file.addMetaData(files, {
         fileNamePrefix: "foo",
         prefixOnly: ["controller", "model"],

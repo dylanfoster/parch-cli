@@ -35,7 +35,7 @@ class HelpCommand extends Command {
     for (const command of commands) {
       if (command.name === "unknown") { continue; }
 
-      helpBody += `  ${this.renderCommandBlock(command)}`;
+      helpBody += `  ${this.renderCommandBlock(command)}\r\n\r\n`;
     }
 
     const help = `${helpHeader}\r\n\r\n${helpSubHeader}\r\n\r\n${helpBody}`;
@@ -54,9 +54,7 @@ class HelpCommand extends Command {
 
     if (command.aliases && command.aliases.length) {
       blockAliases = `aliases: ${command.aliases.join(", ")}`;
-      block += `    ${gray(blockAliases)}\r\n\r\n`;
-    } else {
-      block += "\r\n";
+      block += `    ${gray(blockAliases)}`;
     }
 
     return block;

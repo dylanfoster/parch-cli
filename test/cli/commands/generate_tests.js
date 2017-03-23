@@ -25,7 +25,11 @@ describe("Command | Generate", function () {
 
   describe("#execute", function () {
     afterEach(function () {
-      return del([`${PROJECT_PATH}/**/*`, `!${PROJECT_PATH}`]);
+      return del([
+        `${PROJECT_PATH}/**/*`,
+        `${PROJECT_PATH}/**/.*`,
+        `!${PROJECT_PATH}`
+      ]);
     });
 
     it("generates a class and test file", function () {
@@ -71,7 +75,11 @@ describe("Command | Generate", function () {
 
   describe("#writeTemplateFiles", function () {
     afterEach(function () {
-      return del([`${PROJECT_PATH}/**/*`, `!${PROJECT_PATH}`]);
+      return del([
+        `${PROJECT_PATH}/**/*`,
+        `${PROJECT_PATH}/**/.*`,
+        `!${PROJECT_PATH}`
+      ]);
     });
 
     it("writes a pair of templates", function () {
@@ -91,7 +99,11 @@ describe("Command | Generate", function () {
 
   describe("#writeTemplateFile", function () {
     afterEach(function () {
-      return del([`${PROJECT_PATH}/**/*`, `!${PROJECT_PATH}`]);
+      return del([
+        `${PROJECT_PATH}/**/*`,
+        `${PROJECT_PATH}/**/.*`,
+        `!${PROJECT_PATH}`
+      ]);
     });
 
     it("writes a template file", function () {

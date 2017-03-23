@@ -11,7 +11,22 @@ class MockCLI extends CLI {
 }
 
 class FooCommand extends Command {
+  constructor(cli) {
+    super(cli);
+
+    this.aliases = ["f", "-f", "--foo"];
+    this.args = ["<foo>", "<bar>"];
+    this.description = "foo";
+  }
+
   execute(options) {
+  }
+
+  runHelp() {
+    const helpCommand = this.cli.commands.get("help");
+    const output = helpCommand.renderCommandBlock(this);
+
+    this.cli.log(output);
   }
 }
 
