@@ -5,10 +5,11 @@ import path from "path";
 import changeCase from "change-case";
 import ejs from "ejs";
 import inflect from "inflect";
+import inquirer from "inquirer";
 
 import Command from "../command";
 
-import { file } from "../../utils";
+import { File } from "../../utils";
 
 const VALID_ARGS_LENGTH = 2;
 
@@ -31,6 +32,11 @@ class GenerateCommand extends Command {
     this.args = ["<template>", "<name>"];
     this.description = "Generate a new file from a template";
     this.options = [];
+
+    this.file = new File({
+      cli: this.cli,
+      prompt: inquirer
+    });
   }
 
   execute(options) {
@@ -46,7 +52,7 @@ class GenerateCommand extends Command {
       const name = remain.shift();
 
       return this.getTemplateFiles(type, name)
-        .then(file.makeDirectories.bind(file))
+        .then(this.file.makeDirectories.bind(this.file))
         .then(this.writeTemplateFiles.bind(this, name))
         .catch(err => console.log(err.stack));
     } else {
@@ -69,7 +75,7 @@ class GenerateCommand extends Command {
     const { templateFile, testFile } = templates;
 
     return Promise.all([templateFile, testFile].map(
-      dir => file.walk(path.join(this.templateDir, dir))
+      dir => this.file.walk(path.join(this.templateDir, dir))
     ))
     .then(files => files.reduce((acc, current) => acc.concat(current), []))
     .then(files => {
@@ -82,7 +88,7 @@ class GenerateCommand extends Command {
 
       return files;
     })
-    .then(files => file.addMetaData(files, {
+    .then(files => this.file.addMetaData(files, {
       fileNamePrefix: name,
       prefixOnly: ["controller", "model"],
       projectRoot: this.projectRootPath
@@ -98,19 +104,25 @@ class GenerateCommand extends Command {
   }
 
   writeTemplateFile(name, fileObject) {
-    return file.readFile(fileObject.inPath).then(data => {
+    return this.file.readFile(fileObject.inPath).then(data => {
       const output = ejs.render(data.toString(), {
         name,
         pluralName: inflect.pluralize(name),
         upperCaseName: changeCase.pascalCase(name)
       });
 
-      return file.writeFile(fileObject.outPath, output);
+      return this.file.writeFile(fileObject.outPath, output);
     });
   }
 
   writeTemplateFiles(name, files) {
-    return Promise.all(files.map(this.writeTemplateFile.bind(this, name)));
+    let promise = Promise.resolve();
+
+    files.forEach(f => {
+      promise = promise.then(() => this.writeTemplateFile(name, f));
+    });
+
+    return promise;
   }
 }
 

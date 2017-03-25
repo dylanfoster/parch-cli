@@ -1,7 +1,7 @@
 "use strict";
 
-import file from "./file";
+import File from "./file";
 
 export default {
-  file
-}
+  File
+};

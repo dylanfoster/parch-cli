@@ -7,10 +7,7 @@ import sinon from "sinon";
 import CLI from "../../src/cli";
 import Command from "../../src/cli/command";
 
-class MockCLI extends CLI {
-}
-
-class FooCommand extends Command {
+export class FooCommand extends Command {
   constructor(cli) {
     super(cli);
 
@@ -30,6 +27,9 @@ class FooCommand extends Command {
   }
 }
 
+export class MockCLI extends CLI {
+}
+
 export const mockProcess = {
   cwd() {
     return path.resolve(__dirname, "project");
@@ -40,9 +40,16 @@ export const mockProcess = {
   }
 };
 
+export function mockPrompt() {
+  return Promise.resolve({
+    answer: "overwrite"
+  });
+}
+
 export default {
   CLI: MockCLI,
   Command: FooCommand,
   cli: new MockCLI(mockProcess),
-  process: mockProcess
+  process: mockProcess,
+  prompt: { prompt: mockPrompt }
 };
