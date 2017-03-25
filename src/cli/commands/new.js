@@ -1,22 +1,24 @@
 "use strict";
 
-import fs from "fs";
-import path from "path";
-
 import changeCase from "change-case";
 import ejs from "ejs";
 import inflect from "inflect";
+import inquirer from "inquirer";
 
 import Command from "../command";
-import { file } from "../../utils";
+import { File } from "../../utils";
 
 class NewCommand extends Command {
   constructor(cli) {
     super(cli);
 
-    this.aliases = ["n"],
+    this.aliases = ["n"];
     this.args = ["[name]"];
     this.description = "Generate a new Parch project";
+    this.file = new File({
+      cli: this.cli,
+      prompt: inquirer
+    });
   }
 
   execute(options) {
@@ -27,13 +29,13 @@ class NewCommand extends Command {
 
   generateNewProject() {
     return this.getTemplateFiles()
-      .then(file.makeDirectories.bind(file))
+      .then(this.file.makeDirectories.bind(this.file))
       .then(this.writeTemplateFiles.bind(this));
   }
 
   getTemplateFiles() {
-    return file.walk(this.templateDir)
-      .then(files => file.addMetaData(files, {
+    return this.file.walk(this.templateDir)
+      .then(files => this.file.addMetaData(files, {
         fileNamePrefix: "foo",
         prefixOnly: ["controller", "model"],
         projectRoot: this.projectRootPath
@@ -49,7 +51,7 @@ class NewCommand extends Command {
   }
 
   writeTemplateFile(fileObject) {
-    return file.readFile(fileObject.inPath).then(data => {
+    return this.file.readFile(fileObject.inPath).then(data => {
       const output = ejs.render(data.toString(), {
         name: "foo",
         projectName: this.projectName,
@@ -57,7 +59,7 @@ class NewCommand extends Command {
         upperCaseName: changeCase.pascalCase("foo")
       });
 
-      return file.writeFile(fileObject.outPath, output);
+      return this.file.writeFile(fileObject.outPath, output);
     });
   }
 

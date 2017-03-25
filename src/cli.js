@@ -6,7 +6,10 @@ import include from "include-all";
 import nopt from "nopt";
 import red from "ansi-red";
 
+const MAX_LISTENER_COUNT = 1000;
+
 process.title = "parch-cli";
+process.setMaxListeners(MAX_LISTENER_COUNT);
 
 class CLI {
   constructor(process) {

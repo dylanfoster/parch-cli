@@ -6,7 +6,6 @@ import del from "del";
 import { expect } from "chai";
 
 import NewCommand from "../../../src/cli/commands/new";
-import { file } from "../../../src/utils";
 import fixtures from "../../fixtures";
 
 const PROJECT_PATH = path.resolve(__dirname, "../../fixtures/project");
@@ -16,22 +15,24 @@ const {
 } = fixtures;
 
 describe("Command | New", function () {
-  let cli, command;
+  let cli, command, file;
 
   beforeEach(function () {
     cli = new CLI(fixtures.process);
     command = new NewCommand(cli);
+    file = command.file;
+  });
+
+  afterEach(function () {
+    return del([
+      `${PROJECT_PATH}/**/*`,
+      `${PROJECT_PATH}/**/.*`,
+      `!${PROJECT_PATH}`,
+      `!${PROJECT_PATH}/.gitignore`
+    ]);
   });
 
   describe("#execute", function () {
-    afterEach(function () {
-      return del([
-        `${PROJECT_PATH}/**/*`,
-        `${PROJECT_PATH}/**/.*`,
-        `!${PROJECT_PATH}`
-      ]);
-    });
-
     it("generates a new parch project");
   });
 
@@ -44,14 +45,6 @@ describe("Command | New", function () {
   });
 
   describe("#writeTemplateFiles", function () {
-    afterEach(function () {
-      return del([
-        `${PROJECT_PATH}/**/*`,
-        `${PROJECT_PATH}/**/.*`,
-        `!${PROJECT_PATH}`
-      ]);
-    });
-
     it.skip("writes project files", function () {
       return command.getTemplateFiles()
         .then(file.makeDirectories.bind(file))
@@ -66,14 +59,6 @@ describe("Command | New", function () {
   });
 
   describe("#writeTemplateFile", function () {
-    afterEach(function () {
-      return del([
-        `${PROJECT_PATH}/**/*`,
-        `${PROJECT_PATH}/**/.*`,
-        `!${PROJECT_PATH}`
-      ]);
-    });
-
     it("writes a template file", function () {
       return command.getTemplateFiles()
         .then(file.makeDirectories.bind(file))

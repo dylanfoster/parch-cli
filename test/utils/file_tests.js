@@ -1,8 +1,11 @@
 "use strict";
 
+import fs from "fs";
 import path from "path";
 
 import { expect } from "chai";
+import del from "del";
+import sinon from "sinon";
 
 import File from "../../src/utils/file";
 import fixtures from "../fixtures";
@@ -13,7 +16,19 @@ const {
   prompt
 } = fixtures;
 
-describe.only("Util | File", function () {
+function pathExists(filePath) {
+  return new Promise((resolve, reject) => {
+    fs.access(filePath, err => {
+      if (err) { return reject(err); }
+
+      resolve(true);
+    });
+  });
+}
+
+const PROJECT_FIXTURE = path.resolve(__dirname, "../fixtures/project");
+
+describe("Util | File", function () {
   let cli, file;
 
   beforeEach(function () {
@@ -22,6 +37,15 @@ describe.only("Util | File", function () {
       cli,
       prompt
     });
+  });
+
+  afterEach(function () {
+    return del([
+      `${PROJECT_FIXTURE}/**/*`,
+      `${PROJECT_FIXTURE}/**/.*`,
+      `!${PROJECT_FIXTURE}`,
+      `!${PROJECT_FIXTURE}/.gitignore`
+    ]);
   });
 
   describe("#addMetaData", function () {
@@ -44,7 +68,7 @@ describe.only("Util | File", function () {
   describe("#askForResolution", function () {
     it("prompts the user for file conflict resolution", function () {
       return file.askForResolution("/foo/bar/baz").then(answer => {
-        expect(answer).to.eql("overwrite");
+        expect(answer).to.eql("skip");
       });
     });
   });
@@ -79,24 +103,73 @@ describe.only("Util | File", function () {
   });
 
   describe("#makeDirectories", function () {
-    it("writes several directories");
+    it("writes several directories", function () {
+      const files = [{
+        parentDir: path.resolve(PROJECT_FIXTURE, "foo")
+      }];
+
+      return file.makeDirectories(files).then(
+        () => pathExists(path.resolve(PROJECT_FIXTURE, "foo"))
+      ).then(exists => expect(exists).to.be.true);
+    });
   });
 
   describe("#makeDirectory", function () {
-    it("writes a directory");
+    it("writes a directory", function () {
+      const fileObject = {
+        parentDir: path.resolve(PROJECT_FIXTURE, "foo")
+      };
+
+      return file.makeDirectory(fileObject).then(
+        () => pathExists(path.resolve(PROJECT_FIXTURE, "foo"))
+      ).then(exists => expect(exists).to.be.true);
+    });
   });
 
   describe("#readFile", function () {
-    it("reads a file");
+    let fixture;
+
+    beforeEach(function () {
+      fixture = path.resolve(PROJECT_FIXTURE, ".gitignore");
+    });
+
+    it("reads a file", function () {
+      return file.readFile(fixture).then(data => {
+        expect(data.toString()).to.eql("*\n!.gitignore\n");
+      });
+    });
   });
 
   describe("#walk", function () {
-    it("walks a file tree and returns file objects");
+    it("walks a file tree and returns file objects", function () {
+      return file.walk(PROJECT_FIXTURE).then(files => {
+        const [gitignore] = files.filter(f => f.name === ".gitignore");
+
+        expect(gitignore.name).to.eql(".gitignore");
+      });
+    });
   });
 
   describe("#writeFile", function () {
-    it("writes a file");
+    let fixture;
 
-    it("prompts a user for conflict resolution");
+    beforeEach(function () {
+      fixture = path.resolve(PROJECT_FIXTURE, "foo.js");
+    });
+
+    it("writes a file", function () {
+      return file.writeFile(fixture, "foo").then(
+        () => pathExists(fixture)
+      ).then(exists => expect(exists).to.be.true).catch(console.log.bind(console));
+    });
+
+    it.skip("prompts a user for conflict resolution", function () {
+      fixture = path.resolve(PROJECT_FIXTURE, ".gitignore");
+      sinon.spy(prompt, "prompt");
+
+      return file.writeFile(fixture, "foo").then(
+        () => expect(prompt).to.have.been.called
+      );
+    });
   });
 });

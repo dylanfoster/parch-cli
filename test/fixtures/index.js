@@ -42,7 +42,7 @@ export const mockProcess = {
 
 export function mockPrompt() {
   return Promise.resolve({
-    answer: "overwrite"
+    answer: "skip"
   });
 }
 

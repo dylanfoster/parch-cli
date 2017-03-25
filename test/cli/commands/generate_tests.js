@@ -6,7 +6,6 @@ import del from "del";
 import { expect } from "chai";
 
 import GenerateCommand from "../../../src/cli/commands/generate";
-import { file } from "../../../src/utils";
 import fixtures from "../../fixtures";
 
 const PROJECT_PATH = path.resolve(__dirname, "../../fixtures/project");
@@ -16,30 +15,32 @@ const {
 } = fixtures;
 
 describe("Command | Generate", function () {
-  let cli, command;
+  let cli, command, file;
 
   beforeEach(function () {
     cli = new CLI(fixtures.process);
     command = new GenerateCommand(cli);
+    file = command.file;
+  });
+
+  afterEach(function () {
+    return del([
+      `${PROJECT_PATH}/**/*`,
+      `${PROJECT_PATH}/**/.*`,
+      `!${PROJECT_PATH}`,
+      `!${PROJECT_PATH}/.gitignore`
+    ]);
   });
 
   describe("#execute", function () {
-    afterEach(function () {
-      return del([
-        `${PROJECT_PATH}/**/*`,
-        `${PROJECT_PATH}/**/.*`,
-        `!${PROJECT_PATH}`
-      ]);
-    });
-
     it("generates a class and test file", function () {
-        return command.execute({
-          argv: {
-            cooked: [],
-            original: ["g", "controller", "foo"],
-            remain: ["g", "controller", "foo"],
-          }
-        })
+      return command.execute({
+        argv: {
+          cooked: [],
+          original: ["g", "controller", "foo"],
+          remain: ["g", "controller", "foo"],
+        }
+      })
         .then(() => file.walk(PROJECT_PATH))
         .then(files => {
           const hasControllerFile = files.some(f => f.name === "foo_controller.js");
@@ -74,14 +75,6 @@ describe("Command | Generate", function () {
   });
 
   describe("#writeTemplateFiles", function () {
-    afterEach(function () {
-      return del([
-        `${PROJECT_PATH}/**/*`,
-        `${PROJECT_PATH}/**/.*`,
-        `!${PROJECT_PATH}`
-      ]);
-    });
-
     it("writes a pair of templates", function () {
       return command.getTemplateFiles("controller", "foo")
         .then(file.makeDirectories.bind(file))
@@ -98,14 +91,6 @@ describe("Command | Generate", function () {
   });
 
   describe("#writeTemplateFile", function () {
-    afterEach(function () {
-      return del([
-        `${PROJECT_PATH}/**/*`,
-        `${PROJECT_PATH}/**/.*`,
-        `!${PROJECT_PATH}`
-      ]);
-    });
-
     it("writes a template file", function () {
       return command.getTemplateFiles("controller", "foo")
         .then(file.makeDirectories.bind(file))

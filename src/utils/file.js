@@ -55,25 +55,13 @@ class File {
     });
   }
 
-  diffHighlight(line) {
-    if (line[0] === "+") {
-      return green(line);
-    } else if (line[0] === "-") {
-      return red(line);
-    } else if (line.match(/^@@/)) {
-      return cyan(line);
-    } else {
-      return line;
-    }
-  }
-
   displayDiff(filePath, existingData, newData) {
     const patch = createPatch(filePath, existingData, newData);
     const lines = patch.split("\n");
     let output = "";
 
     for (const line of lines) {
-      output += this.diffHighlight(line);
+      output += this._diffHighlight(line);
       output += "\n";
     }
 
@@ -84,8 +72,12 @@ class File {
 
   exists(filePath) {
     return new Promise((resolve, reject) => {
-      fs.access(filePath, err => {
-        if (err) { return reject(err); }
+      fs.access(filePath, fs.constants.F_OK, err => {
+        if (err && err.code === "ENOENT") {
+          return resolve(false);
+        } else if (err) {
+          return reject(err);
+        }
 
         resolve(true);
       });
@@ -221,6 +213,18 @@ class File {
     }
 
     return file;
+  }
+
+  _diffHighlight(line) {
+    if (line[0] === "+") {
+      return green(line);
+    } else if (line[0] === "-") {
+      return red(line);
+    } else if (line.match(/^@@/)) {
+      return cyan(line);
+    } else {
+      return line;
+    }
   }
 }
 
