@@ -64,7 +64,13 @@ class NewCommand extends Command {
   }
 
   writeTemplateFiles(files) {
-    return Promise.all(files.map(this.writeTemplateFile.bind(this)));
+    let promise = Promise.resolve();
+
+    files.forEach(f => {
+      promise = promise.then(() => this.writeTemplateFile(f));
+    });
+
+    return promise;
   }
 }
 

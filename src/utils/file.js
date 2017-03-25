@@ -3,7 +3,7 @@
 import fs from "fs";
 import path from "path";
 
-import { createPatch } from "diff";
+import { createPatch, diffChars } from "diff";
 import cyan from "ansi-cyan";
 import green from "ansi-green";
 import inquirer from "inquirer";
@@ -128,9 +128,10 @@ class File {
 
   writeFile(filePath, data) {
     return this.checkIfExists(filePath).then(existing => {
+      const shouldDiff = diffChars(existing, data).length > 1;
       let promise;
 
-      if (existing) {
+      if (existing && shouldDiff) {
         promise = this.askForResolution(filePath, existing, data).then(answer => {
           switch (answer) {
             case "diff":
