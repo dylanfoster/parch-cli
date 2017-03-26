@@ -31,5 +31,6 @@ export default class InstallCommand extends Command {
 
     this.cli.log();
     this.cli.log(output);
+    this.cli.log();
   }
 }

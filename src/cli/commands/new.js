@@ -59,6 +59,7 @@ export default class NewCommand extends Command {
 
     this.cli.log();
     this.cli.log(output);
+    this.cli.log();
   }
 
   writeTemplateFile(fileObject) {

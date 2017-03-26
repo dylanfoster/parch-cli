@@ -104,6 +104,7 @@ export default class GenerateCommand extends Command {
 
     this.cli.log();
     this.cli.log(output);
+    this.cli.log();
   }
 
   writeTemplateFile(name, fileObject) {
