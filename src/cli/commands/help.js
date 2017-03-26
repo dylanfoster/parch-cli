@@ -28,7 +28,7 @@ export default class HelpCommand extends Command {
     }
 
     const commands = _.uniqBy(Array.from(this.cli.commands.values()), "name");
-    const helpHeader = "Usage: parch <command>";
+    const helpHeader = "\nUsage: parch <command>";
     const helpSubHeader = "Available Commands:";
     let helpBody = "";
 

@@ -6,12 +6,11 @@ class <%= upperCaseName %>Model extends Model {
   constructor() {
     super({
       hooks: {
-        beforeCreate(/* user */) {
+        beforeCreate(/* instance */) {
           return;
         }
       },
       instanceMethods: {
-        hasPassword(/* password */) {}
       }
     });
   }
