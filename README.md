@@ -1,5 +1,7 @@
 # parch-cli
 
+[![Build Status](https://travis-ci.org/dylanfoster/parch-cli.svg?branch=master)](https://travis-ci.org/dylanfoster/parch-cli)
+
 > CLI tool for [parch](https://github.com/dylanfoster/parch)
 
 ## Installation
