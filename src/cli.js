@@ -56,7 +56,7 @@ class CLI {
     } else if (options.version) {
       command = this.commands.get("version");
     } else {
-      command = this.commands.get("unknown");
+      command = this.commands.get("help");
     }
 
     return command;
