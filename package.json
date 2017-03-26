@@ -5,7 +5,7 @@
   "bin": {
     "parch": "bin/parch"
   },
-  "main": "src/cli",
+  "main": "./index.js",
   "scripts": {
     "build": "babel src -d lib",
     "build:watch": "chokidar 'src/**' 'test/**/*.js' '!test/fixtures/project/' -c 'npm run build' --initial",

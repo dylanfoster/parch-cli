@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 "use strict";
 
-const CLI = require("../lib/cli");
+const CLI = require("..");
 const cli = new CLI(process);
 
-return cli.run(process.argv);
+cli.run(process.argv);
