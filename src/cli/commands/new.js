@@ -24,7 +24,12 @@ export default class NewCommand extends Command {
   execute(options) {
     super.execute(options);
 
-    return this.generateNewProject().catch(this.cli.log.bind(this.cli));
+    this.cli.progress.start();
+
+    return this.generateNewProject()
+      .then(this.install.bind(this, options))
+      .then(() => this.cli.progress.stop())
+      .catch(this.cli.log.bind(this.cli));
   }
 
   generateNewProject() {
@@ -42,12 +47,19 @@ export default class NewCommand extends Command {
       }));
   }
 
+  install(options) {
+    const install = this.cli.commands.get("install");
+
+    return install.execute(options);
+  }
+
   runHelp() {
     const helpCommand = this.cli.commands.get("help");
     const output = helpCommand.renderCommandBlock(this);
 
     this.cli.log();
     this.cli.log(output);
+    this.cli.log();
   }
 
   writeTemplateFile(fileObject) {
@@ -70,6 +82,7 @@ export default class NewCommand extends Command {
       promise = promise.then(() => this.writeTemplateFile(f));
     });
 
+    this.cli.log();
     return promise;
   }
 }

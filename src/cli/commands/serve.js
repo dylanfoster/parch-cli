@@ -27,5 +27,6 @@ export default class ServeCommand extends Command {
 
     this.cli.log();
     this.cli.log(output);
+    this.cli.log();
   }
 }

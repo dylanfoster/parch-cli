@@ -47,6 +47,7 @@
     "lodash": "^4.17.4",
     "mkdirp": "^0.5.1",
     "nopt": "^4.0.1",
+    "ora": "^1.2.0",
     "readdirp": "^2.1.0"
   },
   "devDependencies": {
@@ -61,7 +62,7 @@
     "del": "^2.2.2",
     "eslint": "^3.18.0",
     "eslint-config-unstandard": "^1.4.2",
-    "istanbul": "^0.4.5",
+    "istanbul": "^1.0.0-alpha.2",
     "mocha": "^3.2.0",
     "sinon": "^2.0.0",
     "sinon-chai": "^2.8.0",

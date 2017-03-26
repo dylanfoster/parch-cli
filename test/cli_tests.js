@@ -199,5 +199,17 @@ describe("CLI", function () {
 
       expect(cli.process.stdout.write).to.have.been.calledWith("\u001b[31mUnknown command: 'foo'\u001b[39m\n");
     });
+
+    it("executes help by default", function () {
+      const command = cli.commands.get("help");
+
+      sinon.spy(command, "execute");
+
+      cli.run(args());
+
+      expect(command.execute).to.have.been.called;
+
+      command.execute.restore();
+    });
   });
 });

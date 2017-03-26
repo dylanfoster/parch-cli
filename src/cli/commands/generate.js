@@ -51,9 +51,12 @@ export default class GenerateCommand extends Command {
       const type = remain.shift();
       const name = remain.shift();
 
+      this.cli.progress.start();
+
       return this.getTemplateFiles(type, name)
         .then(this.file.makeDirectories.bind(this.file))
         .then(this.writeTemplateFiles.bind(this, name))
+        .then(() => this.cli.progress.stop())
         .catch(err => console.log(err.stack));
     } else {
       const help = this.cli.commands.get("help");
@@ -101,6 +104,7 @@ export default class GenerateCommand extends Command {
 
     this.cli.log();
     this.cli.log(output);
+    this.cli.log();
   }
 
   writeTemplateFile(name, fileObject) {
@@ -122,6 +126,7 @@ export default class GenerateCommand extends Command {
       promise = promise.then(() => this.writeTemplateFile(name, f));
     });
 
+    this.cli.log();
     return promise;
   }
 }

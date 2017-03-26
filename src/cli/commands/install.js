@@ -18,7 +18,6 @@ export default class InstallCommand extends Command {
 
     this.cli.log();
     this.cli.log(green("Installing dependencies"));
-    this.cli.log();
 
     return execa("npm", ["install"], {
       cwd: this.projectRootPath,
@@ -32,5 +31,6 @@ export default class InstallCommand extends Command {
 
     this.cli.log();
     this.cli.log(output);
+    this.cli.log();
   }
 }
