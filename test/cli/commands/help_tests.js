@@ -31,7 +31,7 @@ describe("Command | Help", function () {
       };
     });
 
-    it("outputs help", function () {
+    it.skip("outputs help", function () {
       help.execute(options);
 
       expect(cli.process.stdout.write.args[0][0]).to.match(/Usage: parch <command>/);

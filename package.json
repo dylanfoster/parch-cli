@@ -39,6 +39,7 @@
     "detect-conflict": "^1.0.1",
     "diff": "^3.2.0",
     "ejs": "^2.5.6",
+    "execa": "^0.6.3",
     "file": "^0.2.2",
     "include-all": "^4.0.3",
     "inflect": "^0.3.0",

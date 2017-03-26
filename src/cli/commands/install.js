@@ -1,5 +1,8 @@
 "use strict";
 
+import execa from "execa";
+import green from "ansi-green";
+
 import Command from "../command";
 
 export default class InstallCommand extends Command {
@@ -10,7 +13,14 @@ export default class InstallCommand extends Command {
     this.description = "Install project dependencies";
   }
 
-  execute(options) {
-    this.cli.log("Not yet implemented");
+  execute() {
+    this.cli.log();
+    this.cli.log(green("Installing dependencies"));
+    this.cli.log();
+
+    return execa("npm", ["install"], {
+      cwd: this.projectRootPath,
+      stdio: "inherit"
+    });
   }
 }
