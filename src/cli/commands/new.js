@@ -24,7 +24,6 @@ export default class NewCommand extends Command {
   execute(options) {
     super.execute(options);
 
-    this.cli.progress.text = "Install app";
     this.cli.progress.start();
 
     return this.generateNewProject()
@@ -82,6 +81,7 @@ export default class NewCommand extends Command {
       promise = promise.then(() => this.writeTemplateFile(f));
     });
 
+    this.cli.log();
     return promise;
   }
 }

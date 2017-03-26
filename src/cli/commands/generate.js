@@ -51,7 +51,6 @@ export default class GenerateCommand extends Command {
       const type = remain.shift();
       const name = remain.shift();
 
-      this.cli.progress.text = `Generating templates for ${type}`;
       this.cli.progress.start();
 
       return this.getTemplateFiles(type, name)
@@ -126,6 +125,7 @@ export default class GenerateCommand extends Command {
       promise = promise.then(() => this.writeTemplateFile(name, f));
     });
 
+    this.cli.log();
     return promise;
   }
 }
