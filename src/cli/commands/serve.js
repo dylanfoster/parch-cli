@@ -1,5 +1,7 @@
 "use strict";
 
+import execa from "execa";
+
 import Command from "../command";
 
 export default class ServeCommand extends Command {
@@ -12,6 +14,18 @@ export default class ServeCommand extends Command {
 
   execute(options) {
     super.execute(options);
-    this.cli.log("Not yet implemented");
+
+    return execa("npm", ["run", "start:dev"], {
+      cwd: this.projectRootPath,
+      stdio: "inherit"
+    });
+  }
+
+  runHelp() {
+    const helpCommand = this.cli.commands.get("help");
+    const output = helpCommand.renderCommandBlock(this);
+
+    this.cli.log();
+    this.cli.log(output);
   }
 }

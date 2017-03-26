@@ -14,6 +14,8 @@ export default class InstallCommand extends Command {
   }
 
   execute() {
+    super.execute(...arguments);
+
     this.cli.log();
     this.cli.log(green("Installing dependencies"));
     this.cli.log();
@@ -22,5 +24,13 @@ export default class InstallCommand extends Command {
       cwd: this.projectRootPath,
       stdio: "inherit"
     });
+  }
+
+  runHelp() {
+    const helpCommand = this.cli.commands.get("help");
+    const output = helpCommand.renderCommandBlock(this);
+
+    this.cli.log();
+    this.cli.log(output);
   }
 }
