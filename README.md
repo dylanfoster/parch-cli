@@ -1,6 +1,7 @@
 # parch-cli
 
 [![Build Status](https://travis-ci.org/dylanfoster/parch-cli.svg?branch=develop)](https://travis-ci.org/dylanfoster/parch-cli)
+[![Coverage Status](https://coveralls.io/repos/github/dylanfoster/parch-cli/badge.svg?branch=develop)](https://coveralls.io/github/dylanfoster/parch-cli?branch=develop)
 
 > CLI tool for [parch](https://github.com/dylanfoster/parch)
 
