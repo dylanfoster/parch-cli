@@ -8,7 +8,7 @@ import inquirer from "inquirer";
 import Command from "../command";
 import { File } from "../../utils";
 
-class NewCommand extends Command {
+export default class NewCommand extends Command {
   constructor(cli) {
     super(cli);
 
@@ -73,5 +73,3 @@ class NewCommand extends Command {
     return promise;
   }
 }
-
-module.exports = NewCommand;

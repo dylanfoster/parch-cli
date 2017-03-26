@@ -2,7 +2,7 @@
 
 import path from "path";
 
-class Command {
+export default class Command {
   get name() {
     return this.constructor.name.split(/command/i)[0].toLowerCase();
   }
@@ -38,5 +38,3 @@ class Command {
     this.cli.log(`No help for command '${this.name}'`);
   }
 }
-
-module.exports = Command;

@@ -2,7 +2,7 @@
 
 import Command from "../command";
 
-class UnknownCommand extends Command {
+export default class UnknownCommand extends Command {
   execute(options) {
     const { argv: { original }} = options;
 
@@ -10,5 +10,3 @@ class UnknownCommand extends Command {
     this.cli.log("Run parch -h for help");
   }
 }
-
-module.exports = UnknownCommand;

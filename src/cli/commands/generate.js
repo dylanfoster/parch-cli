@@ -13,7 +13,7 @@ import { File } from "../../utils";
 
 const VALID_ARGS_LENGTH = 2;
 
-class GenerateCommand extends Command {
+export default class GenerateCommand extends Command {
   constructor(cli) {
     super(cli);
 
@@ -125,5 +125,3 @@ class GenerateCommand extends Command {
     return promise;
   }
 }
-
-module.exports = GenerateCommand;

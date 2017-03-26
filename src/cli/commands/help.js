@@ -6,7 +6,7 @@ import yellow from "ansi-yellow";
 
 import Command from "../command";
 
-class HelpCommand extends Command {
+export default class HelpCommand extends Command {
   constructor(cli) {
     super(cli);
 
@@ -60,5 +60,3 @@ class HelpCommand extends Command {
     return block;
   }
 }
-
-module.exports = HelpCommand;

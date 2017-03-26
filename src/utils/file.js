@@ -10,6 +10,7 @@ import inquirer from "inquirer";
 import mkdirp from "mkdirp";
 import readdirp from "readdirp";
 import red from "ansi-red";
+import yellow from "ansi-yellow";
 
 const DOTFILES = [
   "editorconfig",
@@ -21,7 +22,7 @@ const DOTFILES = [
   "travis.yml"
 ];
 
-class File {
+export default class File {
   constructor(options) {
     this.cli = options.cli;
     this.prompt = options.prompt.prompt || inquirer.prompt;
@@ -35,7 +36,7 @@ class File {
     const questions = {
       type: "expand",
       name: "answer",
-      default: false,
+      default: 0,
       message: `Overwrite file ${file}`,
       choices: [
         { key: "y", name: "Yes, Overwrite", value: "overwrite" },
@@ -128,37 +129,32 @@ class File {
 
   writeFile(filePath, data) {
     return this.checkIfExists(filePath).then(existing => {
-      const shouldDiff = diffChars(existing, data).length > 1;
       let promise;
 
-      if (existing && shouldDiff) {
-        promise = this.askForResolution(filePath, existing, data).then(answer => {
-          switch (answer) {
-            case "diff":
-              return this.displayDiff(filePath, existing, data).then(() => this.writeFile(filePath, data));
-            case "overwrite":
-              return this._writeFile(filePath, data);
-            case "skip":
-              return;
-            default:
-              return this._writeFile(filePath, data);
-          }
-        });
+      if (existing) {
+        const shouldDiff = diffChars(existing, data).length > 1;
+
+        if (shouldDiff) {
+          promise = this.askForResolution(filePath, existing, data).then(answer => {
+            switch (answer) {
+              case "diff":
+                return this.displayDiff(filePath, existing, data).then(() => this.writeFile(filePath, data));
+              case "overwrite":
+                return this._writeFile(filePath, data, "overwrite");
+              case "skip":
+                return;
+              default:
+                return this._writeFile(filePath, data, "skip");
+            }
+          });
+        } else {
+          promise = this._writeFile(filePath, data, "identical");
+        }
       } else {
-        promise = this._writeFile(filePath, data);
+        promise = this._writeFile(filePath, data, "create");
       }
 
       return promise;
-    });
-  }
-
-  _writeFile(filePath, data) {
-    return new Promise((resolve, reject) => {
-      fs.writeFile(filePath, data, err => {
-        if (err) { return reject(err); }
-
-        resolve();
-      });
     });
   }
 
@@ -227,6 +223,38 @@ class File {
       return line;
     }
   }
-}
 
-module.exports = File;
+  _getWriteActionColor(action) {
+    let string;
+
+    switch (action) {
+      case "create":
+        string = green(action);
+        break;
+      case "identical":
+        string = yellow(action);
+        break;
+      case "overwrite":
+        string = red(action);
+        break;
+      default:
+        string = action;
+    }
+
+    return string;
+  }
+
+  _writeFile(filePath, data, action) {
+    const coloredAction = this._getWriteActionColor(action);
+
+    return new Promise((resolve, reject) => {
+      fs.writeFile(filePath, data, err => {
+        if (err) { return reject(err); }
+
+        this.cli.log(`${coloredAction}: ${filePath}`);
+
+        resolve();
+      });
+    });
+  }
+}

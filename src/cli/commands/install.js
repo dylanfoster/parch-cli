@@ -2,16 +2,15 @@
 
 import Command from "../command";
 
-export default class ServeCommand extends Command {
+export default class InstallCommand extends Command {
   constructor(cli) {
     super(cli);
 
-    this.aliases = ["s"];
-    this.description = "Start your api server";
+    this.aliases = ["i"];
+    this.description = "Install project dependencies";
   }
 
   execute(options) {
-    super.execute(options);
     this.cli.log("Not yet implemented");
   }
 }

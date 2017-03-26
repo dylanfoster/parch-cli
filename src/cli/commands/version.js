@@ -3,7 +3,7 @@
 import Command from "../command";
 import pkg from "../../../package";
 
-class VersionCommand extends Command {
+export default class VersionCommand extends Command {
   constructor(cli) {
     super(cli);
 
@@ -15,5 +15,3 @@ class VersionCommand extends Command {
     this.cli.log(pkg.version);
   }
 }
-
-module.exports = VersionCommand;
