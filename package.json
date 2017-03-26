@@ -47,6 +47,7 @@
     "lodash": "^4.17.4",
     "mkdirp": "^0.5.1",
     "nopt": "^4.0.1",
+    "ora": "^1.2.0",
     "readdirp": "^2.1.0"
   },
   "devDependencies": {

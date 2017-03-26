@@ -4,6 +4,7 @@ import path from "path";
 
 import include from "include-all";
 import nopt from "nopt";
+import ora from "ora";
 import red from "ansi-red";
 
 const MAX_LISTENER_COUNT = 1000;
@@ -25,6 +26,9 @@ class CLI {
 
     this.commands = new Map();
     this.process = process;
+    this.progress = ora({
+      color: "green"
+    });
     this._loadCommands();
   }
 

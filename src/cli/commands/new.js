@@ -24,7 +24,13 @@ export default class NewCommand extends Command {
   execute(options) {
     super.execute(options);
 
-    return this.generateNewProject().catch(this.cli.log.bind(this.cli));
+    this.cli.progress.text = "Install app";
+    this.cli.progress.start();
+
+    return this.generateNewProject()
+      .then(this.install.bind(this, options))
+      .then(() => this.cli.progress.stop())
+      .catch(this.cli.log.bind(this.cli));
   }
 
   generateNewProject() {
@@ -40,6 +46,12 @@ export default class NewCommand extends Command {
         prefixOnly: ["controller", "model"],
         projectRoot: this.projectRootPath
       }));
+  }
+
+  install(options) {
+    const install = this.cli.commands.get("install");
+
+    return install.execute(options);
   }
 
   runHelp() {
