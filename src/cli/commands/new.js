@@ -48,6 +48,7 @@ export default class NewCommand extends Command {
   }
 
   install(options) {
+    this.cli.progress.stop();
     const install = this.cli.commands.get("install");
 
     return install.execute(options);

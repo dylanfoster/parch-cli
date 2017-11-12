@@ -1,3 +1,8 @@
+<a name="0.1.0"></a>
+# [0.1.0](https://github.com/dylanfoster/parch-cli/compare/0.0.1...0.1.0) (2017-11-12)
+
+
+
 <a name="0.0.1"></a>
 ## 0.0.1 (2017-03-26)
 

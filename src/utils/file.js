@@ -119,10 +119,8 @@ export default class File {
       const files = [];
 
       readdirp({ root: directory })
-        .on("data", data => {
-          files.push(data);
-        })
-      .on("error", reject.bind(reject))
+        .on("data", data => files.push(data))
+        .on("error", reject.bind(reject))
         .on("end", resolve.bind(resolve, files));
     });
   }
@@ -187,7 +185,7 @@ export default class File {
 
   _checkIfIsTestFile(file) {
     const isTestFile = path.dirname(file.parentDir) &&
-      path.dirname(file.parentDir) === "test";
+      path.dirname(file.parentDir).split(path.sep).pop() === "test";
 
     if (isTestFile) { file.isTestFile = true; }
 
@@ -197,10 +195,14 @@ export default class File {
   _checkIfShouldPrefix(file, options) {
     options.prefixOnly = options.prefixOnly || ["controller", "model"];
 
-    const namedFile = `${options.fileNamePrefix}_${path.basename(file.outPath)}`;
+    let namedFile = `${options.fileNamePrefix}.js`;
     const shouldPrefix = options.prefixOnly.some(
       t => path.dirname(file.fullPath).match(new RegExp(t, "i"))
     );
+
+    if (file.isTestFile) {
+      namedFile = `${options.fileNamePrefix}_tests.js`;
+    }
 
     if (shouldPrefix) {
       file.outPath = file.outPath.replace(
