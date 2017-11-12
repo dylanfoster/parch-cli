@@ -61,7 +61,7 @@ describe("Util | File", function () {
         projectRoot: "/foo"
       });
 
-      expect(updated.outPath).to.eql("/lib/controllers/foo_controller.js");
+      expect(updated.outPath).to.eql("/lib/controllers/foo.js");
     });
   });
 

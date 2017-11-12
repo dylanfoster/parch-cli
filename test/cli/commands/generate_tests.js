@@ -43,8 +43,8 @@ describe("Command | Generate", function () {
       })
         .then(() => file.walk(PROJECT_PATH))
         .then(files => {
-          const hasControllerFile = files.some(f => f.name === "foo_controller.js");
-          const hasTestFile = files.some(f => f.name === "foo_controller_tests.js");
+          const hasControllerFile = files.some(f => f.name === "foo.js");
+          const hasTestFile = files.some(f => f.name === "foo_tests.js");
 
           expect(hasControllerFile).to.be.true;
           expect(hasTestFile).to.be.true;
@@ -81,8 +81,8 @@ describe("Command | Generate", function () {
         .then(files => command.writeTemplateFiles("foo", files))
         .then(() => file.walk(PROJECT_PATH))
         .then(files => {
-          const hasControllerFile = files.some(f => f.name === "foo_controller.js");
-          const hasTestFile = files.some(f => f.name === "foo_controller_tests.js");
+          const hasControllerFile = files.some(f => f.name === "foo.js");
+          const hasTestFile = files.some(f => f.name === "foo_tests.js");
 
           expect(hasControllerFile).to.be.true;
           expect(hasTestFile).to.be.true;
@@ -99,7 +99,7 @@ describe("Command | Generate", function () {
         .then(files => {
           const [expected] = files.filter(f => f.name !== ".gitignore");
 
-          expect(expected.name).to.eql("foo_controller.js");
+          expect(expected.name).to.eql("foo.js");
         });
     });
   });
